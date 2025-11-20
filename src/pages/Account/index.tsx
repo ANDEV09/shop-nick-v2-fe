@@ -3,13 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "~/context/AuthContext";
 import { formatNumber } from "~/utils/functions";
 
-// Dữ liệu mẫu các user khác (dùng cho admin)
-const usersList = [
-    { id: 1, name: "Nguyen Van A", email: "a@gmail.com", role: "member" },
-    { id: 2, name: "Tran Thi B", email: "b@gmail.com", role: "member" },
-    { id: 3, name: "Admin", email: "admin@gmail.com", role: "admin" },
-];
-
 const AccountPage = () => {
     const [activeTab, setActiveTab] = useState("info");
     const navigate = useNavigate();
@@ -29,11 +22,6 @@ const AccountPage = () => {
     const [serviceOrders, setServiceOrders] = useState<Array<Record<string, unknown>>>([]);
     const [loadingOrders, setLoadingOrders] = useState(false);
     const [ordersError, setOrdersError] = useState<string | null>(null);
-
-    // States for admin account management
-    const [accounts, setAccounts] = useState<Array<Record<string, unknown>>>([]);
-    const [loadingAccounts, setLoadingAccounts] = useState(false);
-    const [accountsError, setAccountsError] = useState<string | null>(null);
 
     // Fetch user profile when component mounts or when info tab is active
     useEffect(() => {
@@ -58,14 +46,6 @@ const AccountPage = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab, user]);
-
-    // Fetch accounts for admin when accounts tab is active
-    useEffect(() => {
-        if (activeTab === "accounts" && user?.access_token && userProfile?.role === "ADMIN") {
-            fetchAccounts();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTab, user, userProfile]);
 
     const fetchUserProfile = async () => {
         try {
@@ -149,74 +129,12 @@ const AccountPage = () => {
         }
     };
 
-    const fetchAccounts = async () => {
-        try {
-            setLoadingAccounts(true);
-            setAccountsError(null);
-
-            const response = await fetch("http://localhost:8000/game-accounts", {
-                headers: {
-                    Authorization: `Bearer ${user?.access_token}`,
-                },
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                const items =
-                    data?.result?.data && Array.isArray(data.result.data)
-                        ? data.result.data
-                        : Array.isArray(data.result)
-                          ? data.result
-                          : [];
-                setAccounts(items);
-            } else {
-                setAccountsError(data.message || "Không thể tải danh sách account");
-            }
-        } catch (error) {
-            setAccountsError(error instanceof Error ? error.message : "Có lỗi xảy ra");
-        } finally {
-            setLoadingAccounts(false);
-        }
-    };
-
-    const handleDeleteAccount = async (accountId: string) => {
-        if (!confirm("Bạn có chắc chắn muốn xóa account này?")) return;
-
-        try {
-            const response = await fetch(`http://localhost:8000/game-accounts/account/${accountId}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${user?.access_token}`,
-                },
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert("Xóa account thành công!");
-                fetchAccounts();
-            } else {
-                alert(data.message || "Có lỗi xảy ra khi xóa account");
-            }
-        } catch (error) {
-            alert("Có lỗi xảy ra: " + (error instanceof Error ? error.message : String(error)));
-        }
-    };
-
-    // Tabs cho user và admin
-    const userTabs = [
+    // Tabs cho user
+    const tabs = [
         { id: "info", label: "Thông tin tài khoản" },
         { id: "history", label: "Lịch sử mua nick" },
         { id: "orders", label: "Lịch sử đặt dịch vụ" },
     ];
-
-    const adminTabs = [
-        { id: "users", label: "Quản lý user" },
-        { id: "accounts", label: "Quản lý account game" },
-    ];
-
-    const tabs = userProfile?.role === "ADMIN" ? [...userTabs, ...adminTabs] : userTabs;
 
     const formatDate = (dateString: string) => {
         try {
@@ -497,148 +415,6 @@ const AccountPage = () => {
                                 </table>
                             </div>
                         )}
-                    </div>
-                )}
-
-                {/* Admin: Quản lý user */}
-                {activeTab === "users" && userProfile?.role === "ADMIN" && (
-                    <div className="space-y-4">
-                        <h3 className="mb-3 text-2xl font-semibold">Quản lý user</h3>
-                        <table className="w-full border-collapse border border-gray-200">
-                            <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="border px-4 py-2">ID</th>
-                                    <th className="border px-4 py-2">Tên</th>
-                                    <th className="border px-4 py-2">Email</th>
-                                    <th className="border px-4 py-2">Role</th>
-                                    <th className="border px-4 py-2">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {usersList.map((u) => (
-                                    <tr key={u.id}>
-                                        <td className="border px-4 py-2">{u.id}</td>
-                                        <td className="border px-4 py-2">{u.name}</td>
-                                        <td className="border px-4 py-2">{u.email}</td>
-                                        <td className="border px-4 py-2">{u.role}</td>
-                                        <td className="flex gap-2 border px-4 py-2">
-                                            <button className="rounded bg-yellow-400 px-3 py-1 text-white hover:bg-yellow-500">
-                                                Sửa
-                                            </button>
-                                            <button className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600">
-                                                Xóa
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        <button
-                            onClick={() => navigate("/admin/add-user")}
-                            className="cursoi-pointer mt-4 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                        >
-                            Thêm user mới
-                        </button>
-                    </div>
-                )}
-
-                {/* Admin: Quản lý account game */}
-                {activeTab === "accounts" && userProfile?.role === "ADMIN" && (
-                    <div className="space-y-4">
-                        <h3 className="mb-3 text-2xl font-semibold">Quản lý account game</h3>
-
-                        {loadingAccounts ? (
-                            <div className="flex justify-center py-8">
-                                <p className="text-gray-500">Đang tải...</p>
-                            </div>
-                        ) : accountsError ? (
-                            <div className="rounded border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-                                <p>{accountsError}</p>
-                            </div>
-                        ) : accounts.length === 0 ? (
-                            <div className="rounded border border-gray-200 bg-gray-50 px-4 py-8 text-center text-gray-600">
-                                <p>Chưa có account nào.</p>
-                            </div>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full border-collapse border border-gray-200">
-                                    <thead>
-                                        <tr className="bg-gray-100">
-                                            <th className="border px-4 py-2 text-left">ID</th>
-                                            <th className="border px-4 py-2 text-left">Hình ảnh</th>
-                                            <th className="border px-4 py-2 text-left">Tên</th>
-                                            <th className="border px-4 py-2 text-left">Giá</th>
-                                            <th className="border px-4 py-2 text-left">Trạng thái</th>
-                                            <th className="border px-4 py-2 text-left">Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {accounts.map((acc, index) => (
-                                            <tr key={String(acc.id ?? index)} className="hover:bg-gray-50">
-                                                <td className="border px-4 py-2">{String(acc.id ?? "-")}</td>
-                                                <td className="border px-4 py-2">
-                                                    {acc.thumb && typeof acc.thumb === "string" ? (
-                                                        <img
-                                                            src={acc.thumb}
-                                                            alt="thumb"
-                                                            className="h-12 w-12 rounded object-cover"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-xs text-gray-400">Không có ảnh</span>
-                                                    )}
-                                                </td>
-                                                <td className="border px-4 py-2">
-                                                    <span className="font-medium">
-                                                        {String(acc.name ?? "Không có tên")}
-                                                    </span>
-                                                </td>
-                                                <td className="border px-4 py-2">
-                                                    <span className="font-semibold text-blue-600">
-                                                        {formatNumber(Number(acc.price ?? 0))} ₫
-                                                    </span>
-                                                </td>
-                                                <td className="border px-4 py-2">
-                                                    <span
-                                                        className={`inline-block rounded-full px-2 py-1 text-xs font-semibold ${
-                                                            Number(acc.status) === 0
-                                                                ? "bg-green-100 text-green-800"
-                                                                : "bg-red-100 text-red-800"
-                                                        }`}
-                                                    >
-                                                        {Number(acc.status) === 0 ? "Còn hàng" : "Đã bán"}
-                                                    </span>
-                                                </td>
-                                                <td className="border px-4 py-2">
-                                                    <div className="flex gap-2">
-                                                        <button
-                                                            onClick={() =>
-                                                                navigate(`/admin/edit-account/${String(acc.id)}`)
-                                                            }
-                                                            className="rounded bg-yellow-400 px-3 py-1 text-white hover:bg-yellow-500"
-                                                        >
-                                                            Sửa
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteAccount(String(acc.id))}
-                                                            className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-                                                        >
-                                                            Xóa
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-
-                        <button
-                            onClick={() => navigate("/admin/add-account")}
-                            className="mt-4 cursor-pointer rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                        >
-                            Thêm account mới
-                        </button>
                     </div>
                 )}
             </section>

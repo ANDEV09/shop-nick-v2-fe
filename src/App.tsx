@@ -18,6 +18,13 @@ import ServicePackagesPage from "./pages/ServicePackages";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
+import AdminDashboard from "./pages/Admin";
+import GameCategoryPage from "./components/Admin/GameCategoryPage";
+import GameServicePage from "./components/Admin/GameServicePage";
+import GameGroupPage from "./components/Admin/GameGroupPage";
+import GameAccountPage from "./components/Admin/GameAccountPage";
+import ServicePackagePage from "./components/Admin/ServicePackagePage";
+import AdminPage from "./pages/Admin";
 
 const queryClient = new QueryClient();
 const App = () => {
@@ -43,6 +50,12 @@ const App = () => {
                             <Route path="/reset-password/:token" element={<ResetPassword />} />
                             <Route path="/change-password" element={<ChangePassword />} />
                         </Route>
+                        <Route path="/admin" element={<AdminPage />} />
+                        <Route path="/admin/game-categories" element={<GameCategoryPage />} />
+                        <Route path="/admin/game-groups/:categoryId" element={<GameGroupPage />} />
+                        <Route path="/admin/game-accounts/:groupId" element={<GameAccountPage />} />
+                        <Route path="/admin/game-services" element={<GameServicePage />} />
+                        <Route path="/admin/service-packages/:serviceId" element={<ServicePackagePage />} />
                         <Route path="/admin/add-user" element={<AddUserPage />} />
                         <Route path="/admin/add-account" element={<AddAccountPage />} />
                         <Route path="/admin/edit-account/:id" element={<EditAccountPage />} />

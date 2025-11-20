@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FaRegUser, FaFacebookF, FaYoutube } from "react-icons/fa";
 import { IoMdLogIn } from "react-icons/io";
@@ -35,6 +35,30 @@ const Header = () => {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
     const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+    const [userRole, setUserRole] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            if (user?.access_token) {
+                try {
+                    const response = await fetch("http://localhost:8000/auth/profile", {
+                        headers: {
+                            Authorization: `Bearer ${user.access_token}`,
+                        },
+                    });
+
+                    const data = await response.json();
+                    if (response.ok && data.result) {
+                        setUserRole(data.result.role);
+                    }
+                } catch (error) {
+                    console.error("Error fetching user role:", error);
+                }
+            }
+        };
+
+        fetchUserRole();
+    }, [user]);
 
     return (
         <>
@@ -121,6 +145,14 @@ const Header = () => {
                                         >
                                             Thông tin tài khoản
                                         </Link>
+                                        {userRole === "ADMIN" && (
+                                            <Link
+                                                to="/admin"
+                                                className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-600"
+                                            >
+                                                Admin Dashboard
+                                            </Link>
+                                        )}
                                         <button
                                             onClick={() => logout(navigate)}
                                             className="w-full px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-600"
