@@ -113,9 +113,6 @@ const Header = () => {
                     {/* Auth Buttons */}
                     <div className="relative hidden gap-3 xl:flex">
                         {user ? (
-
-                            
-                            
                             <div className="relative w-44">
                                 {/* Avatar + Name */}
                                 <div
@@ -131,13 +128,13 @@ const Header = () => {
                                         );
                                     }}
                                 >
-                                    <div className="h-8 w-8 text-blue-600">
+                                    <div className="h-6 w-6 text-blue-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                                         </svg>
                                     </div>
-                                    <span className="flex flex-1 items-center justify-center truncate text-sm">
-                                        {user?.name ? String(user.name) : "Người dùng"}
+                                    <span className="ml-2 flex flex-1 items-center justify-center truncate text-sm">
+                                        {user?.username ? String(user.username) : "Người dùng"}
                                     </span>
                                 </div>
                                 {/* Dropdown */}

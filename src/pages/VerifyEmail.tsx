@@ -12,7 +12,9 @@ const VerifyEmailPage = () => {
             try {
                 const res = await fetch(`http://localhost:8000/auth/verify-email/${token}`);
                 const data = await res.json();
-                if (res.ok && data.success) {
+                console.log(res);
+
+                if (res.ok) {
                     setStatus("success");
                     setMessage(data.message || "Xác thực email thành công!");
                 } else {
@@ -28,20 +30,32 @@ const VerifyEmailPage = () => {
     }, [token]);
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50">
-            <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow-lg">
-                <h1 className="mb-4 text-2xl font-bold text-gray-800">Xác thực Email</h1>
-                {status === "pending" && <div className="font-semibold text-blue-600">Đang xác thực...</div>}
-                {status === "success" && <div className="mb-2 font-semibold text-green-600">{message}</div>}
-                {status === "error" && <div className="mb-2 font-semibold text-red-600">{message}</div>}
-                <Link
-                    to="/login"
-                    className="mt-6 inline-block rounded bg-blue-600 px-6 py-2 font-medium text-white transition hover:bg-blue-700"
-                >
-                    Đăng nhập
-                </Link>
-            </div>
-        </div>
+        <>
+            <form className="mt-8 space-y-5">
+                <div>
+                    <div className="relative flex flex-col items-center justify-center">
+                        {status === "success" && (
+                            <>
+                                <img
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpBrFpH2FpYiRsG2DZ1FmeOOHaeixp8tTnfA&s"
+                                    className="h-30 w-30"
+                                />
+                                <h4 className="mt-5 font-bold text-green-500">Đã xác minh tài khoản thành công!</h4>
+                            </>
+                        )}
+                        {status === "error" && (
+                            <>
+                                <img
+                                    src="https://www.freeiconspng.com/thumbs/error-icon/error-icon-4.png"
+                                    className="h-30 w-30"
+                                />
+                                <h4 className="mt-5 font-bold text-red-500">Đã xảy ra lỗi trong quá trình xác thực!</h4>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </form>
+        </>
     );
 };
 

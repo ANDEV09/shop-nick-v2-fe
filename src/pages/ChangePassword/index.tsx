@@ -89,7 +89,7 @@ const ChangePassword = () => {
 
     return (
         <div className="container mx-auto my-8 flex justify-center px-4">
-            <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+            <div className="w-full max-w-md rounded-2xl bg-white p-8">
                 <div className="mb-8">
                     <h2 className="mb-2 text-3xl font-bold text-gray-800">Đổi mật khẩu</h2>
                     <p className="text-sm text-gray-600">Nhập mật khẩu cũ và mật khẩu mới của bạn</p>

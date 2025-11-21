@@ -18,7 +18,6 @@ import ServicePackagesPage from "./pages/ServicePackages";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import AdminDashboard from "./pages/Admin";
 import GameCategoryPage from "./components/Admin/GameCategoryPage";
 import GameServicePage from "./components/Admin/GameServicePage";
 import GameGroupPage from "./components/Admin/GameGroupPage";
@@ -50,7 +49,13 @@ const App = () => {
                             <Route path="/forgot-password" element={<ForgotPassword />} />
                             <Route path="/reset-password/:token" element={<ResetPassword />} />
                             <Route path="/change-password" element={<ChangePassword />} />
-                            <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+                            <Route
+                                path="/verify-email/:token"
+                                element={<AuthenticationLayout title="Xác minh email" page="" />}
+                            >
+                                <Route index element={<VerifyEmailPage />} />
+                            </Route>
+                            {/* <Route path="/verify-email/:token" element={<VerifyEmailPage />} /> */}
                         </Route>
                         <Route path="/admin/*" element={<AdminPage />} />
                         <Route path="/admin/game-categories" element={<GameCategoryPage />} />
