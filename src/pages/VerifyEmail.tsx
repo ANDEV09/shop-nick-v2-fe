@@ -1,29 +1,23 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const VerifyEmailPage = () => {
     const { token } = useParams<{ token: string }>();
     const [status, setStatus] = useState<"pending" | "success" | "error">("pending");
-    const [message, setMessage] = useState<string>("");
 
     useEffect(() => {
         if (!token) return;
         const verify = async () => {
             try {
                 const res = await fetch(`http://localhost:8000/auth/verify-email/${token}`);
-                const data = await res.json();
-                console.log(res);
 
                 if (res.ok) {
                     setStatus("success");
-                    setMessage(data.message || "Xác thực email thành công!");
                 } else {
                     setStatus("error");
-                    setMessage(data.message || "Xác thực email thất bại!");
                 }
             } catch {
                 setStatus("error");
-                setMessage("Có lỗi xảy ra khi xác thực email!");
             }
         };
         verify();
