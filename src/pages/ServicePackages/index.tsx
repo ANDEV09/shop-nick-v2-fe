@@ -21,6 +21,7 @@ export default function ServicePackagesPage() {
         password: "",
     });
     const [submitting, setSubmitting] = useState(false);
+    const [successMsg, setSuccessMsg] = useState("");
 
     useEffect(() => {
         if (!serviceId) return;
@@ -114,12 +115,16 @@ export default function ServicePackagesPage() {
             const data = await response.json();
 
             if (response.ok) {
-                alert("Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.");
                 setOrderForm({
                     accountName: "",
                     password: "",
                 });
                 setSelectedPackage(null);
+                setSuccessMsg("Đặt dịch vụ thành công! Đang chuyển hướng đến lịch sử đặt đơn...");
+                setTimeout(() => {
+                    setSuccessMsg("");
+                    navigate("/thong-tin?focus=order-history");
+                }, 3000);
             } else {
                 alert(data.message || "Có lỗi xảy ra. Vui lòng thử lại!");
             }
@@ -339,13 +344,17 @@ export default function ServicePackagesPage() {
                                 />
                             </div>
                         </div>
-
+                        {successMsg && (
+                            <div className="animate-fade-in mb-6 rounded-2xl bg-green-100 px-6 py-4 text-center text-lg font-bold text-green-700 shadow-lg">
+                                {successMsg}
+                            </div>
+                        )}
                         {/* Submit Button */}
                         <div className="flex gap-4">
                             <button
                                 type="submit"
                                 disabled={submitting || !selectedPackage}
-                                className="flex-1 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 py-4 text-lg font-bold text-white transition-all duration-300 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+                                className="flex-1 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 py-2.5 text-base font-bold text-white transition-all duration-300 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {submitting ? "Đang xử lý..." : "XÁC NHẬN ĐẶT DỊCH VỤ"}
                             </button>
@@ -353,7 +362,7 @@ export default function ServicePackagesPage() {
                                 <button
                                     type="button"
                                     onClick={() => setSelectedPackage(null)}
-                                    className="rounded-lg border-2 border-gray-300 px-6 py-4 text-sm font-semibold text-gray-700 transition-all hover:border-red-500 hover:bg-red-50 hover:text-red-600"
+                                    className="rounded-lg border-2 border-gray-300 px-4 py-2.5 text-xs font-semibold text-gray-700 transition-all hover:border-red-500 hover:bg-red-50 hover:text-red-600"
                                 >
                                     Hủy
                                 </button>

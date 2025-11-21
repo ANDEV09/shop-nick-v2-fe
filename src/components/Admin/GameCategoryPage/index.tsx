@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "~/context/AuthContext";
 import { Plus, X, Pencil, Trash2, Eye } from "lucide-react";
 import AdminSidebar from "~/components/Admin/AdminSidebar";
 import AdminHeader from "~/components/Admin/AdminHeader";
@@ -16,6 +17,7 @@ interface Category {
 
 export default function GameCategoryPage() {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [, setCurrentTablePage] = useState(1);
@@ -38,7 +40,11 @@ export default function GameCategoryPage() {
         try {
             setLoading(true);
             // Sử dụng endpoint mới cho admin lấy tất cả category (active 0/1)
-            const response = await fetch("http://localhost:8000/game-categories/admin/all");
+            const response = await fetch("http://localhost:8000/game-categories/admin/all", {
+                headers: {
+                    Authorization: `Bearer ${user?.access_token}`,
+                },
+            });
             const data = await response.json();
 
             if (data.result && Array.isArray(data.result)) {
@@ -55,18 +61,15 @@ export default function GameCategoryPage() {
         if (!confirm("Bạn có chắc chắn muốn xóa danh mục này?")) {
             return;
         }
-
         try {
             const response = await fetch(`http://localhost:8000/game-categories/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${user?.access_token}`,
                 },
             });
-
             const data = await response.json();
-            console.log("Delete response:", data);
-
             if (response.ok || data.success) {
                 alert("Xóa danh mục thành công!");
                 fetchCategories();
@@ -91,12 +94,12 @@ export default function GameCategoryPage() {
 
     const handleUpdate = async () => {
         if (!editingCategory) return;
-
         try {
             const response = await fetch(`http://localhost:8000/game-categories/${editingCategory.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${user?.access_token}`,
                 },
                 body: JSON.stringify({
                     name: formData.name,
@@ -104,9 +107,7 @@ export default function GameCategoryPage() {
                     active: formData.status === "active" ? 1 : 0,
                 }),
             });
-
             const data = await response.json();
-
             if (response.ok || data.success) {
                 alert("Cập nhật danh mục thành công!");
                 setShowEditModal(false);
@@ -130,7 +131,7 @@ export default function GameCategoryPage() {
                 <AdminHeader />
 
                 <div className="flex-1 overflow-y-auto scroll-smooth p-8">
-                    <div className="mb-8">
+                    <div className="mb-8 flex items-center justify-between">
                         <h1 className="mb-2 text-2xl font-bold text-gray-800">Admin: Accounts Category</h1>
                     </div>
 
@@ -152,8 +153,14 @@ export default function GameCategoryPage() {
                                 </select>
                                 <span className="text-sm text-gray-600">entries</span>
                             </div>
+                            <button
+                                onClick={() => setShowModal(true)}
+                                className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition hover:bg-blue-700"
+                            >
+                                <Plus size={18} />
+                                Thêm danh mục mới
+                            </button>
                         </div>
-
                         <div className="mb-6 overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
@@ -263,15 +270,7 @@ export default function GameCategoryPage() {
                             </div>
                         </div>
 
-                        <div className="mt-6">
-                            <button
-                                onClick={() => setShowModal(true)}
-                                className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition hover:bg-blue-700"
-                            >
-                                <Plus size={18} />
-                                Thêm danh mục mới
-                            </button>
-                        </div>
+                        {/* nút thêm danh mục đã chuyển lên trên */}
                     </div>
                 </div>
             </div>
@@ -345,6 +344,7 @@ export default function GameCategoryPage() {
                                         method: "POST",
                                         headers: {
                                             "Content-Type": "application/json",
+                                            Authorization: `Bearer ${user?.access_token}`,
                                         },
                                         body: JSON.stringify({
                                             name: formData.name,
@@ -352,9 +352,7 @@ export default function GameCategoryPage() {
                                             active: formData.status === "active" ? 1 : 0,
                                         }),
                                     });
-
                                     const data = await response.json();
-
                                     if (response.ok) {
                                         // Success - refresh danh sách
                                         await fetchCategories();

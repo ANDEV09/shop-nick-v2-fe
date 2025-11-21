@@ -107,7 +107,7 @@ const Register = () => {
                             value={data?.email}
                             required
                             className="outline-primary w-full rounded-md border border-slate-300 px-4 py-2.5 text-sm text-slate-800"
-                            placeholder="Không bắt buộc (Dùng để lấy lại mật khẩu)"
+                            placeholder="Nhập vào địa chỉ email"
                         />
                         <MdEmail className="ht-icon absolute right-4 max-sm:hidden" />
                     </div>

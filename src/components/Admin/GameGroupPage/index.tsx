@@ -188,6 +188,11 @@ export default function GameGroupPage() {
                 <AdminHeader />
 
                 <div className="flex-1 overflow-y-auto scroll-smooth p-8">
+                    <div className="mb-8 flex items-center justify-between">
+                        <h1 className="mb-2 text-2xl font-bold text-gray-800">
+                            {category ? `Nhóm tài khoản: ${category.name}` : "Admin: Accounts Groups"}
+                        </h1>
+                    </div>
                     <div className="mb-8 flex items-center gap-4">
                         <button
                             onClick={() => navigate("/admin/game-categories")}

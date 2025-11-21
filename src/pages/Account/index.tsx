@@ -1,12 +1,21 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "~/context/AuthContext";
 import { formatNumber } from "~/utils/functions";
 
 const AccountPage = () => {
+    const location = useLocation();
     const [activeTab, setActiveTab] = useState("info");
     const navigate = useNavigate();
     const { user } = useAuth();
+
+    // Auto focus tab if query param exists
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get("focus") === "order-history") {
+            setActiveTab("orders");
+        }
+    }, [location.search]);
 
     // States for user profile
     const [userProfile, setUserProfile] = useState<Record<string, unknown> | null>(null);
@@ -17,6 +26,10 @@ const AccountPage = () => {
     const [purchaseHistory, setPurchaseHistory] = useState<Array<Record<string, unknown>>>([]);
     const [loadingHistory, setLoadingHistory] = useState(false);
     const [historyError, setHistoryError] = useState<string | null>(null);
+
+    // Modal xem thông tin đăng nhập
+    const [showLoginInfoModal, setShowLoginInfoModal] = useState(false);
+    const [loginInfo, setLoginInfo] = useState<{ accountName?: string; password?: string } | null>(null);
 
     // States for service orders
     const [serviceOrders, setServiceOrders] = useState<Array<Record<string, unknown>>>([]);
@@ -134,6 +147,7 @@ const AccountPage = () => {
         { id: "info", label: "Thông tin tài khoản" },
         { id: "history", label: "Lịch sử mua nick" },
         { id: "orders", label: "Lịch sử đặt dịch vụ" },
+        { id: "deposit", label: "Lịch sử nạp tiền" },
     ];
 
     const formatDate = (dateString: string) => {
@@ -181,6 +195,15 @@ const AccountPage = () => {
                         </li>
                     ))}
                 </ul>
+                {/* Liên hệ hỗ trợ dưới sidebar */}
+                <div className="mt-8 flex justify-center">
+                    <a
+                        href="https://www.facebook.com/hoang.an.ytb"
+                        className="w-full rounded-lg border border-green-500 px-5 py-2 text-center font-semibold text-green-600 transition hover:bg-green-50"
+                    >
+                        Liên hệ hỗ trợ
+                    </a>
+                </div>
             </aside>
 
             {/* Content */}
@@ -200,7 +223,7 @@ const AccountPage = () => {
                             </div>
                         ) : !userProfile ? (
                             <div className="rounded border border-gray-200 bg-gray-50 px-4 py-8 text-center text-gray-600">
-                                <p>Không thể tải thông tin tài khoản</p>
+                                <p>Vui lòng đăng nhập để tiếp tục!</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -213,13 +236,17 @@ const AccountPage = () => {
                                     <p className="font-medium">{String(userProfile.email ?? "N/A")}</p>
                                 </div>
                                 <div>
-                                    <p className="text-gray-500">Mật khẩu</p>
-                                    <p className="font-medium">••••••••</p>
+                                    <p className="text-gray-500">Xác thực Email</p>
+                                    {userProfile.verify === 1 ? (
+                                        <p className="font-medium text-green-600">Đã xác thực</p>
+                                    ) : (
+                                        <p className="font-medium text-red-500">Chưa xác thực</p>
+                                    )}
                                 </div>
                                 <div>
-                                    <p className="text-gray-500">Role</p>
+                                    <p className="text-gray-500">Vai trò</p>
                                     <p className="font-medium">
-                                        {userProfile.role === "ADMIN" ? "Quản trị viên" : "Người dùng"}
+                                        {userProfile.role === "ADMIN" ? "Quản trị viên" : "Member"}
                                     </p>
                                 </div>
                                 <div>
@@ -279,20 +306,36 @@ const AccountPage = () => {
                                 <table className="w-full border-collapse border border-gray-200">
                                     <thead>
                                         <tr className="bg-gray-100">
-                                            <th className="border px-4 py-2 text-left">Tên tài khoản</th>
+                                            <th className="border px-4 py-2 text-left">STT</th>
+                                            <th className="border px-4 py-2 text-left">Tên</th>
+                                            <th className="border px-4 py-2 text-left">Thông tin đăng nhập</th>
                                             <th className="border px-4 py-2 text-left">Giá</th>
                                             <th className="border px-4 py-2 text-left">Ngày mua</th>
-                                            <th className="border px-4 py-2 text-left">Trạng thái</th>
                                             <th className="border px-4 py-2 text-left">Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {purchaseHistory.map((item, index) => (
                                             <tr key={String(item.id ?? index)} className="hover:bg-gray-50">
+                                                <td className="border px-4 py-2 text-center">{index + 1}</td>
                                                 <td className="border px-4 py-2">
                                                     <span className="font-medium">
                                                         {String(item.name ?? "Không có tên")}
                                                     </span>
+                                                </td>
+                                                <td className="border px-4 py-2 text-center">
+                                                    <button
+                                                        className="rounded bg-blue-500 px-3 py-1 text-sm text-white transition hover:bg-blue-600"
+                                                        onClick={() => {
+                                                            setLoginInfo({
+                                                                accountName: String(item.accountName ?? "-"),
+                                                                password: String(item.password ?? "-"),
+                                                            });
+                                                            setShowLoginInfoModal(true);
+                                                        }}
+                                                    >
+                                                        Xem
+                                                    </button>
                                                 </td>
                                                 <td className="border px-4 py-2">
                                                     <span className="font-semibold text-blue-600">
@@ -307,11 +350,6 @@ const AccountPage = () => {
                                                           : "-"}
                                                 </td>
                                                 <td className="border px-4 py-2">
-                                                    <span className="inline-block rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800">
-                                                        Đã mua
-                                                    </span>
-                                                </td>
-                                                <td className="border px-4 py-2">
                                                     <button
                                                         onClick={() => navigate(`/accounts/${String(item.id)}`)}
                                                         className="rounded bg-blue-500 px-3 py-1 text-sm text-white transition hover:bg-blue-600"
@@ -321,6 +359,76 @@ const AccountPage = () => {
                                                 </td>
                                             </tr>
                                         ))}
+                                        {/* Modal hiển thị thông tin đăng nhập */}
+                                        {showLoginInfoModal && (
+                                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                                                <div className="relative w-full max-w-xs rounded-lg bg-white p-6 shadow-lg">
+                                                    <button
+                                                        className="absolute top-3 right-3 text-xl text-gray-400 hover:text-gray-700"
+                                                        onClick={() => setShowLoginInfoModal(false)}
+                                                    >
+                                                        ×
+                                                    </button>
+                                                    <h3 className="mb-4 text-center text-lg font-bold">
+                                                        Thông tin đăng nhập
+                                                    </h3>
+                                                    <div className="mb-4">
+                                                        <label className="mb-1 block text-sm text-red-500">
+                                                            Tên đăng nhập:
+                                                        </label>
+                                                        <div className="flex items-center gap-2">
+                                                            <input
+                                                                type="text"
+                                                                readOnly
+                                                                value={loginInfo?.accountName || ""}
+                                                                className="flex-1 rounded-lg border-2 border-red-400 bg-red-50 px-3 py-2 text-base font-semibold text-red-700 select-all focus:outline-none"
+                                                            />
+                                                            <button
+                                                                className="flex h-[42px] items-center rounded bg-red-500 px-3 py-2 font-semibold text-white transition hover:bg-red-600 active:bg-red-700"
+                                                                style={{ height: "42px" }} // Đảm bảo chiều cao bằng input
+                                                                onClick={() => {
+                                                                    if (loginInfo?.accountName) {
+                                                                        navigator.clipboard.writeText(
+                                                                            loginInfo.accountName,
+                                                                        );
+                                                                    }
+                                                                }}
+                                                                title="Sao chép tên đăng nhập"
+                                                            >
+                                                                Sao chép
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mb-2">
+                                                        <label className="mb-1 block text-sm text-red-500">
+                                                            Mật khẩu:
+                                                        </label>
+                                                        <div className="flex items-center gap-2">
+                                                            <input
+                                                                type="text"
+                                                                readOnly
+                                                                value={loginInfo?.password || ""}
+                                                                className="flex-1 rounded-lg border-2 border-red-400 bg-red-50 px-3 py-2 text-base font-semibold text-red-700 select-all focus:outline-none"
+                                                            />
+                                                            <button
+                                                                className="flex h-[42px] items-center rounded bg-red-500 px-3 py-2 font-semibold text-white transition hover:bg-red-600 active:bg-red-700"
+                                                                style={{ height: "42px" }}
+                                                                onClick={() => {
+                                                                    if (loginInfo?.password) {
+                                                                        navigator.clipboard.writeText(
+                                                                            loginInfo.password,
+                                                                        );
+                                                                    }
+                                                                }}
+                                                                title="Sao chép mật khẩu"
+                                                            >
+                                                                Sao chép
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -415,6 +523,17 @@ const AccountPage = () => {
                                 </table>
                             </div>
                         )}
+                        {/* ...existing code... */}
+                    </div>
+                )}
+
+                {/* Lịch sử nạp tiền (giống lịch sử đặt dịch vụ, bạn sẽ sửa sau) */}
+                {activeTab === "deposit" && (
+                    <div className="space-y-4">
+                        <h3 className="mb-3 text-2xl font-semibold">Lịch sử nạp tiền</h3>
+                        <div className="rounded border border-gray-200 bg-gray-50 px-4 py-8 text-center text-gray-600">
+                            <p>Chưa có lịch sử nạp tiền nào.</p>
+                        </div>
                     </div>
                 )}
             </section>

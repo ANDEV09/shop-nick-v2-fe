@@ -25,6 +25,7 @@ import GameGroupPage from "./components/Admin/GameGroupPage";
 import GameAccountPage from "./components/Admin/GameAccountPage";
 import ServicePackagePage from "./components/Admin/ServicePackagePage";
 import AdminPage from "./pages/Admin";
+import VerifyEmailPage from "./pages/VerifyEmail";
 
 const queryClient = new QueryClient();
 const App = () => {
@@ -49,8 +50,9 @@ const App = () => {
                             <Route path="/forgot-password" element={<ForgotPassword />} />
                             <Route path="/reset-password/:token" element={<ResetPassword />} />
                             <Route path="/change-password" element={<ChangePassword />} />
+                            <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
                         </Route>
-                        <Route path="/admin" element={<AdminPage />} />
+                        <Route path="/admin/*" element={<AdminPage />} />
                         <Route path="/admin/game-categories" element={<GameCategoryPage />} />
                         <Route path="/admin/game-groups/:categoryId" element={<GameGroupPage />} />
                         <Route path="/admin/game-accounts/:groupId" element={<GameAccountPage />} />

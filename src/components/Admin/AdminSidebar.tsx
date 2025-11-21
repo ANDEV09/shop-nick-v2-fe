@@ -103,11 +103,11 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen, setCurrentPa
                     onClick={() => setGameMenuOpen(!gameMenuOpen)}
                 >
                     <SubMenuItem label="Danh mục game" onClick={() => navigate("/admin/game-categories")} />
-                    <SubMenuItem label="Lịch sử mua nick" onClick={() => navigate("/admin/purchase-history")} />
+                    <SubMenuItem label="Lịch sử nick đã bán" onClick={() => navigate("/admin/purchase-history")} />
                 </MenuItem>
                 <MenuItem
                     icon={Users}
-                    label="Dịch Vụ Cài Thuê"
+                    label="Dịch Vụ Cày Thuê"
                     hasArrow
                     isOpen={serviceMenuOpen}
                     onClick={() => setServiceMenuOpen(!serviceMenuOpen)}

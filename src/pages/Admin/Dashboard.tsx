@@ -9,8 +9,8 @@ export default function Dashboard() {
             <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard value="10" label="Thành Viên" />
                 <StatCard value="1" label="Thành Viên mới" />
-                <StatCard value="138,000" label="Tổng Số Dự" />
                 <StatCard value="363,000" label="Tổng Tiền Nạp" />
+                <StatCard value="0" label="Tổng Tiền Nạp Hôm Nay" />
             </div>
 
             <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -18,10 +18,6 @@ export default function Dashboard() {
                 <StatCard value="0" label="Nạp Thẻ Tháng 11" />
                 <StatCard value="0" label="Nạp Tiền Hôm Nay" />
                 <StatCard value="133,000" label="Nạp Tiền Tháng 11" />
-            </div>
-
-            <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard value="0" label="Tổng Tiền Nạp Hôm Nay" />
             </div>
 
             {/* Order Statistics Section */}

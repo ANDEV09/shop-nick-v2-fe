@@ -143,16 +143,6 @@ export default function HomePage() {
                 <div className="mb-20">
                     <HeadLine title="Dịch Vụ Cày Thuê" url="/services" type="service" />
 
-                    {/* Search Box */}
-                    <div className="mb-6">
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm dịch vụ..."
-                            value={searchService}
-                            onChange={(e) => setSearchService(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none md:text-base"
-                        />
-                    </div>
 
                     {/* Services Grid */}
                     {filteredServices.length === 0 ? (

@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useState, useEffect } from "react";
+import { useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FaRegUser, FaFacebookF, FaYoutube } from "react-icons/fa";
 import { IoMdLogIn } from "react-icons/io";
@@ -35,6 +36,7 @@ const Header = () => {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
     const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+    const dropdownTimeout = useRef<number | null>(null);
     const [userRole, setUserRole] = useState<string | null>(null);
 
     useEffect(() => {
@@ -100,17 +102,8 @@ const Header = () => {
                         <NavLink href="/" active={url === "/"}>
                             Trang chủ
                         </NavLink>
-                        <NavLink href="/nap-tien" active={url === "/nap-tien"}>
-                            Uy tín của shop
-                        </NavLink>
-                        <NavLink href="/lich-su-mua-nick" active={url === "/lich-su-mua-nick"}>
-                            Cách mua acc
-                        </NavLink>
-                        <NavLink href="/thong-tin" active={url === "/thong-tin1"}>
-                            Cách bảo mật
-                        </NavLink>
-                        <NavLink href="/dong-tien" active={url === "/dong-tien"}>
-                            Nạp tiền
+                        <NavLink href="/thong-tin" active={url === "/thong-tin"}>
+                            Lịch sử mua nick
                         </NavLink>
                         <NavLink href="/tin-tuc" active={url === "/tin-tuc"}>
                             Tin tức
@@ -120,25 +113,48 @@ const Header = () => {
                     {/* Auth Buttons */}
                     <div className="relative hidden gap-3 xl:flex">
                         {user ? (
-                            <div
-                                className="relative w-44"
-                                onMouseEnter={() => setUserDropdownOpen(true)}
-                                onMouseLeave={() => setUserDropdownOpen(false)}
-                            >
+
+                            
+                            
+                            <div className="relative w-44">
                                 {/* Avatar + Name */}
-                                <div className="flex w-full cursor-pointer items-center rounded-lg bg-blue-50 px-3 py-2 font-medium text-blue-600 transition-all duration-200 hover:bg-blue-100">
+                                <div
+                                    className="flex w-full cursor-pointer items-center rounded-lg bg-blue-50 px-3 py-2 font-medium text-blue-600 transition-all duration-200 hover:bg-blue-100"
+                                    onMouseEnter={() => {
+                                        if (dropdownTimeout.current) window.clearTimeout(dropdownTimeout.current);
+                                        setUserDropdownOpen(true);
+                                    }}
+                                    onMouseLeave={() => {
+                                        dropdownTimeout.current = window.setTimeout(
+                                            () => setUserDropdownOpen(false),
+                                            200,
+                                        );
+                                    }}
+                                >
                                     <div className="h-8 w-8 text-blue-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                                         </svg>
                                     </div>
-
-                                    <span className="truncate text-sm">{user.name || "Người dùng"}</span>
+                                    <span className="flex flex-1 items-center justify-center truncate text-sm">
+                                        {user?.name ? String(user.name) : "Người dùng"}
+                                    </span>
                                 </div>
-
                                 {/* Dropdown */}
                                 {userDropdownOpen && (
-                                    <div className="absolute right-0 z-50 mt-1 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+                                    <div
+                                        className="absolute right-0 z-50 mt-1 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
+                                        onMouseEnter={() => {
+                                            if (dropdownTimeout.current) window.clearTimeout(dropdownTimeout.current);
+                                            setUserDropdownOpen(true);
+                                        }}
+                                        onMouseLeave={() => {
+                                            dropdownTimeout.current = window.setTimeout(
+                                                () => setUserDropdownOpen(false),
+                                                200,
+                                            );
+                                        }}
+                                    >
                                         <Link
                                             to="/thong-tin"
                                             className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-600"

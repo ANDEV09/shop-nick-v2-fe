@@ -48,9 +48,22 @@ const Login = () => {
             if (access) setCookie("access_token", access, 7);
             if (refresh) setCookie("refresh_token", refresh, 30);
 
-            // Persist minimal user info into context/localStorage: name + access_token
-            const minimalUser = { name: data.username, access_token: access };
-            login(minimalUser);
+            // Sau khi đăng nhập thành công, lấy thông tin user đầy đủ từ /auth/profile
+            let userInfo = { name: data.username, access_token: access };
+            try {
+                const profileRes = await fetch("http://localhost:8000/auth/profile", {
+                    headers: { Authorization: `Bearer ${access}` },
+                });
+                const profileJson = await profileRes.json();
+                if (profileRes.ok && profileJson?.result) {
+                    let role = profileJson.result.role;
+                    if (role && typeof role === "string") {
+                        role = role.toUpperCase();
+                    }
+                    userInfo = { ...profileJson.result, access_token: access, role };
+                }
+            } catch {}
+            login(userInfo);
 
             await showAlert("success", json.message || "Đăng nhập thành công!");
             navigate("/");

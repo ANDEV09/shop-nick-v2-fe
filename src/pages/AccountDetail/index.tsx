@@ -106,6 +106,7 @@ export default function AccountDetailPage() {
                 setAccount(accountData.result ?? null);
 
                 alert("Mua tài khoản thành công!");
+                navigate("/thong-tin?focus=order-history");
             } else {
                 alert(data.message || "Có lỗi xảy ra khi mua tài khoản");
             }
