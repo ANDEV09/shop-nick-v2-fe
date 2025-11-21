@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { formatNumber } from "~/utils/functions";
+import { formatNumber, showAlert } from "~/utils/functions";
 import HeadLine from "~/components/Headline";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { BsLightningChargeFill } from "react-icons/bs";
@@ -120,9 +120,8 @@ export default function ServicePackagesPage() {
                     password: "",
                 });
                 setSelectedPackage(null);
-                setSuccessMsg("Đặt dịch vụ thành công! Đang chuyển hướng đến lịch sử đặt đơn...");
+                await showAlert("success", "Đặt dịch vụ thành công! Đang chuyển hướng đến lịch sử đặt đơn...");
                 setTimeout(() => {
-                    setSuccessMsg("");
                     navigate("/thong-tin?focus=order-history");
                 }, 3000);
             } else {

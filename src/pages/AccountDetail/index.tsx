@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import HeadLine from "~/components/Headline";
-import { formatNumber } from "~/utils/functions";
+import { formatNumber, showAlert } from "~/utils/functions";
 import { FaArrowLeft } from "react-icons/fa";
 import { useAuth } from "~/context/AuthContext";
 
@@ -105,8 +105,10 @@ export default function AccountDetailPage() {
                 const accountData = await accountRes.json();
                 setAccount(accountData.result ?? null);
 
-                alert("Mua tài khoản thành công!");
-                navigate("/thong-tin?focus=order-history");
+                await showAlert("success", "Mua tài khoản thành công! Đang chuyển hướng đến lịch sử mua nick...");
+                setTimeout(() => {
+                    navigate("/thong-tin?focus=order-history");
+                }, 3000);
             } else {
                 alert(data.message || "Có lỗi xảy ra khi mua tài khoản");
             }

@@ -13,7 +13,7 @@ const AccountPage = () => {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get("focus") === "order-history") {
-            setActiveTab("orders");
+            setActiveTab("history");
         }
     }, [location.search]);
 
