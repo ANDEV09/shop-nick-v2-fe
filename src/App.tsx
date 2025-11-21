@@ -46,6 +46,9 @@ const App = () => {
                             <Route path="/register" element={<AuthenticationLayout title="Đăng Ký" page="register" />}>
                                 <Route index element={<Register />} />
                             </Route>
+                            <Route path="/register" element={<AuthenticationLayout title="Đăng Ký" page="register" />}>
+                                <Route index element={<Register />} />
+                            </Route>
                             <Route path="/forgot-password" element={<ForgotPassword />} />
                             <Route path="/reset-password/:token" element={<ResetPassword />} />
                             <Route path="/change-password" element={<ChangePassword />} />

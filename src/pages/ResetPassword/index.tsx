@@ -34,7 +34,7 @@ const ResetPassword = () => {
             const res = await fetch(`http://localhost:8000/auth/reset-password/${token}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ password }),
+                body: JSON.stringify({ password, confirm_password: confirmPassword }),
             });
 
             const json = await res.json().catch(() => ({}));
@@ -55,7 +55,7 @@ const ResetPassword = () => {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+        <div className="flex min-h-screen items-center justify-center px-4 py-12">
             <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
                 <div className="mb-8 text-center">
                     <h2 className="mb-2 text-3xl font-bold text-gray-800">Đặt lại mật khẩu</h2>
